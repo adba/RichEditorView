@@ -34,6 +34,10 @@ import UIKit
     /// Called when custom actions are called by callbacks in the JS
     /// By default, this method is not used unless called by some custom JS that you add
     @objc optional func richEditor(_ editor: RichEditorView, handle action: String)
+    
+    
+    /// Called when the selection changes / state
+    @objc optional func richEditor(_ editor: RichEditorView, stateChanged state: Any)
 }
 
 /// RichEditorView is a UIView that displays richly styled text, and allows it to be edited in a WYSIWYG fashion.
@@ -522,6 +526,15 @@ open class RichEditorView: UIView, UIScrollViewDelegate, UIWebViewDelegate, UIGe
             let range = method.range(of: actionPrefix)!
             let action = method.replacingCharacters(in: range, with: "")
             delegate?.richEditor?(self, handle: action)
+        } else if method.hasPrefix("selection/") {
+            
+            let state = runJS("RE.getState()").data( using: String.Encoding.utf8)!;
+            do {
+                let json = try JSONSerialization.jsonObject(with: state);
+                delegate?.richEditor?(self, stateChanged: json);
+            } catch {
+                
+            }
         }
     }
 
