@@ -41,7 +41,7 @@ import UIKit
 }
 
 /// RichEditorView is a UIView that displays richly styled text, and allows it to be edited in a WYSIWYG fashion.
-open class RichEditorView: UIView, UIScrollViewDelegate, UIWebViewDelegate, UIGestureRecognizerDelegate {
+@objcMembers open class RichEditorView: UIView, UIScrollViewDelegate, UIWebViewDelegate, UIGestureRecognizerDelegate {
 
     // MARK: Public Properties
 
@@ -277,6 +277,10 @@ open class RichEditorView: UIView, UIScrollViewDelegate, UIWebViewDelegate, UIGe
     public func setTextColor(_ color: UIColor) {
         runJS("RE.prepareInsert();")
         runJS("RE.setTextColor('\(color.hex)');")
+    }
+    
+    public func setEditorFontColor(_ color: UIColor) {
+        runJS("RE.setBaseTextColor('\(color.hex)');")
     }
     
     public func setTextBackgroundColor(_ color: UIColor) {
@@ -538,6 +542,8 @@ open class RichEditorView: UIView, UIScrollViewDelegate, UIWebViewDelegate, UIGe
         }
     }
 
+    // MARK: - Responder Handling
+
     /// Called by the UITapGestureRecognizer when the user taps the view.
     /// If we are not already the first responder, focus the editor.
     @objc private func viewWasTapped() {
@@ -546,5 +552,19 @@ open class RichEditorView: UIView, UIScrollViewDelegate, UIWebViewDelegate, UIGe
             focus(at: point)
         }
     }
-    
+
+    override open func becomeFirstResponder() -> Bool {
+        if !webView.containsFirstResponder {
+            focus()
+            return true
+        } else {
+            return false
+        }
+    }
+
+    open override func resignFirstResponder() -> Bool {
+        blur()
+        return true
+    }
+
 }
