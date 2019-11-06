@@ -91,7 +91,7 @@ import UIKit
     private var innerLineHeight: Int = 28
 
     /// The line height of the editor. Defaults to 28.
-    open private(set) var lineHeight: Int {
+    public var lineHeight: Int {
         get {
             if isEditorLoaded, let lineHeight = Int(runJS("RE.getLineHeight();")) {
                 return lineHeight
@@ -235,6 +235,10 @@ import UIKit
     
     public func setFontSize(_ size: Int) {
         runJS("RE.setFontSize('\(size)px');")
+    }
+    
+    public func setFontLineHeight(_ size:Int) {
+        self.lineHeight = size;
     }
     
     public func setEditorBackgroundColor(_ color: UIColor) {
